@@ -1,0 +1,744 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>台灣退休宅追蹤表</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600&family=Noto+Sans+TC:wght@400;600&display=swap">
+<style>
+/* Layout: a quarterly register. One wide column; tables carry the page and fold into cards on phones. Jade accent, green-grey neutrals. */
+:root{
+  --bg:#f3f6f4; --surface:#ffffff; --fg:#1c2520; --muted:#5a6a61; --line:#d4ddd7;
+  --accent:#2a6b58; --accent-soft:#e3f0ea; --link:#1f6390; --chip:#e9eeeb;
+  --crit:#a8321e; --crit-soft:#fbe8e3; --warn:#86580a; --warn-soft:#fbf0d9;
+  --ok:#256a3c; --ok-soft:#e2f2e7; --info:#1f6390; --info-soft:#e4eef7;
+  --display:"Noto Serif TC", "Songti TC", Georgia, serif;
+  --body:"Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#101512; --surface:#171f1b; --fg:#e3eae6; --muted:#98a89f; --line:#2a3530;
+  --accent:#7cc5ab; --accent-soft:#18302a; --link:#8cc0e6; --chip:#202a25;
+  --crit:#ff9a85; --crit-soft:#3a1d17; --warn:#f0c46a; --warn-soft:#33290f;
+  --ok:#8fd3a3; --ok-soft:#17301f; --info:#8cc0e6; --info-soft:#182838; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#101512; --surface:#171f1b; --fg:#e3eae6; --muted:#98a89f; --line:#2a3530;
+  --accent:#7cc5ab; --accent-soft:#18302a; --link:#8cc0e6; --chip:#202a25;
+  --crit:#ff9a85; --crit-soft:#3a1d17; --warn:#f0c46a; --warn-soft:#33290f;
+  --ok:#8fd3a3; --ok-soft:#17301f; --info:#8cc0e6; --info-soft:#182838; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.7;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:24px 56px}
+main{max-width:72rem;margin:0 auto;display:flex;flex-direction:column;gap:4px;min-width:0}
+main > p, main > ul, main > ol, main > blockquote, .changes, .summary, .tools{max-width:48rem}
+h1{font-family:var(--display);font-size:2.1rem;line-height:1.25;margin:0;text-wrap:balance;color:var(--accent);letter-spacing:0.02em}
+h1 + p{margin-top:4px}
+h1 + p strong{font-weight:600;color:var(--fg)}
+h2{font-family:var(--display);font-size:1.4rem;margin:30px 0 8px;padding-top:16px;border-top:1px solid var(--line);text-wrap:balance;scroll-margin-top:12px}
+p{margin:6px 0}
+blockquote{margin:12px 0;padding:10px 14px;background:var(--accent-soft);border-radius:4px}
+blockquote p{margin:0;font-size:0.92rem}
+ul,ol{margin:6px 0;padding-left:1.4rem}
+li{margin:4px 0}
+a{color:var(--link);text-underline-offset:3px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#status{color:var(--muted)}
+
+/* Summary */
+.summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0 0}
+.summary div{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:10px 12px;min-width:0}
+.summary b{display:block;font-family:var(--display);font-size:1.6rem;line-height:1.1;font-variant-numeric:tabular-nums}
+.summary span{font-size:0.85rem;color:var(--muted)}
+.summary .c b{color:var(--crit)}
+@media (max-width:520px){.summary{grid-template-columns:1fr}.summary div{display:flex;align-items:baseline;gap:10px}.summary b{font-size:1.3rem}}
+
+/* Tables */
+.tbl{overflow-x:auto;margin:8px 0;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:0.9rem}
+th,td{padding:8px 10px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:none}
+th{font-size:0.78rem;letter-spacing:0.04em;color:var(--muted);font-weight:600;white-space:nowrap}
+td{font-variant-numeric:tabular-nums}
+td[data-label="名稱"]{min-width:8em;font-weight:600}
+td[data-label="備註"],td[data-label="已知資料"]{min-width:16em;color:var(--muted);font-size:0.86rem}
+td[data-label="地點"]{white-space:nowrap}
+tr.k-conflict td:first-child{box-shadow:inset 3px 0 0 var(--crit)}
+.m2{display:block;font-size:0.76rem;color:var(--muted);white-space:nowrap}
+
+/* Pills */
+.pill{display:inline-block;font-size:0.74rem;font-weight:600;padding:1px 8px;border-radius:999px;white-space:nowrap}
+.pill.k-official{background:var(--ok-soft);color:var(--ok)}
+.pill.k-press{background:var(--info-soft);color:var(--info)}
+.pill.k-only{background:var(--warn-soft);color:var(--warn)}
+.pill.k-conflict{background:var(--crit-soft);color:var(--crit)}
+.pill.new{background:var(--accent);color:var(--surface)}
+.pill.updated{background:var(--info-soft);color:var(--info)}
+
+/* Changes banner */
+.changes{margin:12px 0 0;padding:12px 14px;background:var(--surface);border:1px solid var(--line);border-radius:6px}
+.changes h3{margin:0 0 4px;font-size:0.82rem;letter-spacing:0.04em;color:var(--accent)}
+.changes ul{margin:0}
+
+/* Navigation and filters */
+.tools{display:flex;flex-direction:column;gap:8px;margin:14px 0 0}
+.tools .label{font-size:0.78rem;letter-spacing:0.04em;color:var(--muted);font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips a,.chips button{font:inherit;font-size:0.88rem;line-height:1.2;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);text-decoration:none;cursor:pointer}
+.chips a:hover,.chips button:hover{border-color:var(--accent)}
+.chips button[aria-pressed="true"]{background:var(--accent);color:var(--surface);border-color:var(--accent)}
+#filter-note{font-size:0.85rem;color:var(--muted);margin:0}
+.empty-note{font-size:0.88rem;color:var(--muted)}
+.tools .group{display:flex;flex-direction:column;gap:6px}
+.budget{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.budget input{font:inherit;font-size:0.95rem;width:7.5em;padding:5px 10px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--fg);font-variant-numeric:tabular-nums}
+.budget input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+#budget-unit{font-size:0.88rem;color:var(--muted);margin-right:4px}
+
+/* Overview figures */
+.overview{display:flex;flex-direction:column;gap:12px;margin:8px 0 0;min-width:0}
+.fig{margin:0;padding:12px 14px;background:var(--surface);border:1px solid var(--line);border-radius:6px;min-width:0}
+.fig-title{font-size:0.9rem;font-weight:600;margin:0 0 6px}
+.fig-note{font-size:0.8rem;color:var(--muted);margin:6px 0 0}
+.plot{position:relative;min-width:0}
+.plot svg{display:block;max-width:100%;height:auto;overflow:visible}
+.plot .grid{stroke:var(--line);stroke-width:1}
+.plot .ax{font-size:11px;fill:var(--muted);font-variant-numeric:tabular-nums}
+.plot .lab{font-size:12px;fill:var(--fg);font-weight:600;font-variant-numeric:tabular-nums;paint-order:stroke;stroke:var(--surface);stroke-width:3px}
+.plot .area{fill:var(--accent-soft)}
+.plot .ln{fill:none;stroke:var(--accent);stroke-width:2;stroke-linejoin:round}
+.plot .ln.plan{stroke-dasharray:6 4}
+.plot .today{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3}
+.plot .dot{fill:var(--accent);stroke:var(--surface);stroke-width:2}
+.plot .dot.hollow{fill:var(--surface);stroke:var(--accent)}
+.plot .cross{stroke:var(--muted);stroke-width:1}
+.plot .hit{fill:transparent;cursor:crosshair}
+.plot .land{fill:var(--chip);stroke:var(--line);stroke-width:1}
+.plot .b-op{fill:var(--accent);fill-opacity:0.85;stroke:var(--surface);stroke-width:2}
+.plot .b-total{fill:var(--surface);fill-opacity:0.6;stroke:var(--accent);stroke-width:1.5;stroke-dasharray:3 2}
+.plot .b-hit{fill:transparent;cursor:pointer}
+.plot .city:focus-visible{outline:none}
+.plot .city:focus-visible .b-hit{stroke:var(--accent);stroke-width:2}
+.plot .mlab{font-size:12px;fill:var(--fg);font-weight:600;paint-order:stroke;stroke:var(--chip);stroke-width:3px;cursor:pointer}
+#map-plot svg{max-width:360px;margin:0 auto}
+.tip{position:absolute;z-index:5;max-width:260px;background:var(--fg);color:var(--bg);font-size:0.8rem;line-height:1.5;padding:6px 9px;border-radius:5px;pointer-events:none}
+.map-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:start}
+@media (max-width:720px){.map-row{grid-template-columns:1fr}}
+.city-list{display:flex;flex-direction:column;gap:10px;min-width:0}
+.city-list .reg ul{list-style:none;margin:4px 0 0;padding:0}
+.city-list .reg li{font-size:0.86rem;padding:3px 0;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.reg-btn{font:inherit;font-size:0.82rem;font-weight:600;padding:3px 12px;border-radius:999px;border:1px solid var(--accent);background:var(--surface);color:var(--accent);cursor:pointer}
+.trend{display:inline-flex;align-items:center;gap:6px;color:var(--muted)}
+.spark{flex:none}
+details.hist summary{cursor:pointer;color:var(--link);font-size:0.88rem;margin:6px 0}
+
+/* Compare buttons and panel */
+.pick{align-self:flex-start;margin-top:4px;font:inherit;font-size:0.8rem;padding:3px 10px;border-radius:999px;border:1px solid var(--accent);background:var(--surface);color:var(--accent);cursor:pointer}
+.pick[aria-pressed="true"]{background:var(--accent);color:var(--surface)}
+.pick:disabled{opacity:0.45;cursor:not-allowed}
+.compare-panel{margin:14px 0 0;padding:12px 14px;background:var(--surface);border:1px solid var(--line);border-radius:6px;min-width:0;scroll-margin-top:12px}
+.compare-panel h3{margin:0 0 4px;font-family:var(--display);font-size:1.1rem}
+.compare-panel .hint{font-size:0.85rem;color:var(--muted);margin:0 0 6px}
+.linkbtn{font:inherit;font-size:0.82rem;background:none;border:none;color:var(--link);text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:0 0 0 8px}
+.cmp-tbl{margin:4px 0 0}
+.cmp-tbl table{font-size:0.86rem}
+.cmp-tbl th[scope="row"]{white-space:nowrap;color:var(--muted);font-size:0.78rem;width:6em}
+.cmp-tbl thead th{white-space:normal;color:var(--fg);font-size:0.92rem;min-width:9.5em;vertical-align:bottom}
+.cmp-tbl thead th .pn{display:block;font-weight:600}
+.cmp-tbl thead th .linkbtn{padding:0}
+.cmp-tbl td{min-width:9.5em}
+.cmp-tbl td.best{background:var(--ok-soft);color:var(--ok);font-weight:600}
+#pick-bar{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 16px;background:var(--accent);color:var(--surface);font-size:0.9rem;padding-top:10px;padding-bottom:calc(10px + env(safe-area-inset-bottom, 0px));padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+#pick-bar a{color:var(--surface);font-weight:600}
+body.has-picks{padding-bottom:84px}
+
+.tools .hint{font-size:0.8rem;color:var(--muted);margin:0}
+.cmp .share{color:var(--accent);font-weight:600}
+#income-unit{font-size:0.88rem;color:var(--muted);margin-right:4px}
+
+/* Comparison cell */
+td[data-label="比較"]{min-width:11.5em;background:var(--accent-soft)}
+.cmp{display:flex;flex-direction:column;gap:1px;font-size:0.84rem;line-height:1.5}
+.cmp .big{font-size:0.95rem;font-weight:600;color:var(--fg)}
+.cmp .sub{color:var(--muted)}
+.cmp .extra{color:var(--warn)}
+.cmp .unk{color:var(--muted)}
+.mode-couple .cmp .cp.unk{color:var(--warn);font-weight:600}
+.cmp .na{color:var(--muted)}
+
+/* Phone: tables become cards */
+@media (max-width:720px){
+  .tbl.cards{border:none;background:none;overflow:visible}
+  .tbl.cards thead{display:none}
+  .tbl.cards table,.tbl.cards tbody{display:block}
+  .tbl.cards tr{display:block;background:var(--surface);border:1px solid var(--line);border-radius:6px;margin:0 0 8px;padding:6px 0}
+  .tbl.cards tr.k-conflict{border-left:3px solid var(--crit)}
+  .tbl.cards td{display:block;border:none;padding:3px 12px;min-width:0}
+  .tbl.cards td::before{content:attr(data-label);display:block;font-size:0.72rem;letter-spacing:0.04em;color:var(--muted);font-weight:600}
+  .tbl.cards td[data-label="名稱"]{font-size:1.05rem}
+  .tbl.cards td[data-label="名稱"]::before{display:none}
+  .tbl.cards tr.k-conflict td:first-child{box-shadow:none}
+  .tbl.cards .m2{display:inline;margin-left:6px}
+  .tbl.cards td[data-label="比較"]{margin:4px 12px;padding:6px 10px;border-radius:4px}
+  .tbl.cards td[data-label="比較"]::before{margin-bottom:2px}
+}
+@media (prefers-reduced-motion: reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+</style>
+<main id="doc" lang="zh-Hant-TW"><p id="status">載入最新版本中…</p></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+<script>
+(async function(){
+  const doc=document.getElementById('doc');
+  const TAG_DAYS=28, PING=3.3058;
+  const txt=el=>(el&&el.textContent||'').trim();
+  const fmt=n=>n.toLocaleString('en-US');
+  function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}}
+
+  let md;
+  try{
+    const r=await fetch('retirement-villages.md',{cache:'no-store'});
+    if(!r.ok) throw new Error(r.status);
+    md=await r.text();
+  }catch(e){
+    doc.innerHTML='<p id="status">表格未能載入，請重新整理頁面再試。</p>';
+    return;
+  }
+  doc.innerHTML=marked.parse(md);
+
+  /* Exchange rate from the data file: 1 新幣 = X 新台幣（…） */
+  const rm=md.match(/1 新幣 = ([\d.]+) 新台幣（([^）]+)）/);
+  const RATE=rm?parseFloat(rm[1]):null;
+
+  /* Section ids: fixed tokens so links stay simple */
+  const IDS=[['閱讀說明','guide'],['營運中','operating'],['籌備中','planned'],['待釐清','conflicts'],['尚未列入','watch'],['比較數據','compare'],['入住條件','entry'],['分布與走勢','overview'],['價格紀錄','history'],['資料來源','sources'],['更新紀錄','log']];
+  const h2s=[...doc.querySelectorAll('h2')];
+  h2s.forEach((h,i)=>{const m=IDS.find(([k])=>txt(h).startsWith(k));h.id=m?m[1]:'s'+i;});
+  const byId=id=>h2s.find(h=>h.id===id);
+  const sectionEl=(h,tag)=>{let n=h&&h.nextElementSibling;while(n&&n.tagName!=='H2'){if(n.tagName===tag)return n;const t=n.querySelector&&n.querySelector(tag.toLowerCase());if(t)return t;n=n.nextElementSibling;}return null;};
+
+  /* Comparison data, keyed by name */
+  const num=s=>{const m=String(s).replace(/,/g,'').match(/^\s*(\d+(?:\.\d+)?)\s*$/);return m?parseFloat(m[1]):null;};
+  const CMP={},CMPNOTE={};
+  const cmpT=sectionEl(byId('compare'),'TABLE');
+  if(cmpT){
+    const hs=[...cmpT.querySelectorAll('thead th')].map(txt);
+    cmpT.querySelectorAll('tbody tr').forEach(tr=>{
+      const o={};hs.forEach((h,i)=>o[h]=txt(tr.cells[i]));
+      CMPNOTE[o['名稱']]=o['計算說明']||'';
+      CMP[o['名稱']]={tenure:o['租售'],single:num(o['單人月費']),couple:num(o['雙人月費']),singleRaw:o['單人月費'],coupleRaw:o['雙人月費'],meals:o['含餐'],upfront:num(o['首期資金']),extra:o['另需資金']};
+    });
+  }
+
+  /* Entry conditions, keyed by name */
+  const ENTRY={};
+  const entT=sectionEl(byId('entry'),'TABLE');
+  if(entT){
+    const hs=[...entT.querySelectorAll('thead th')].map(txt);
+    entT.querySelectorAll('tbody tr').forEach(tr=>{const o={};hs.forEach((h,i)=>o[h]=txt(tr.cells[i]));ENTRY[o['名稱']]=o;});
+  }
+
+  /* Price history, keyed by name */
+  const HIST={};
+  const parseZhDate=s=>{const m=String(s).match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);return m?new Date(+m[1],+m[2]-1,+m[3]):null;};
+  const histT=sectionEl(byId('history'),'TABLE');
+  if(histT){
+    const hs=[...histT.querySelectorAll('thead th')].map(txt);
+    histT.querySelectorAll('tbody tr').forEach(tr=>{
+      const o={};hs.forEach((h,i)=>o[h]=txt(tr.cells[i]));
+      const d=parseZhDate(o['日期']);const v=num(o['單人月費']);
+      if(!d||v==null)return;
+      (HIST[o['名稱']]=HIST[o['名稱']]||[]).push({d,v,u:num(o['首期資金'])});
+    });
+    Object.values(HIST).forEach(a=>a.sort((x,y)=>x.d-y.d));
+  }
+  function sparkSvg(a){
+    const w=64,h=20,p=3;const vs=a.map(e=>e.v);const lo=Math.min(...vs),hi=Math.max(...vs);
+    const X=i=>p+i*(w-2*p)/(a.length-1),Y=v=>hi===lo?h/2:h-p-(v-lo)/(hi-lo)*(h-2*p);
+    const pts=a.map((e,i)=>`${X(i).toFixed(1)},${Y(e.v).toFixed(1)}`).join(' ');
+    const lx=X(a.length-1),ly=Y(vs[vs.length-1]);
+    return `<svg class="spark" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true"><polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linejoin="round"/><circle cx="${lx}" cy="${ly}" r="2.5" fill="var(--accent)" stroke="var(--surface)" stroke-width="1"/></svg>`;
+  }
+  function histLine(tr,full){
+    const a=HIST[tr._name]||[];if(!a.length)return '';
+    if(a.length<2){const d=a[0].d;return `<span class="sub">價格紀錄始於 ${d.getFullYear()}年${d.getMonth()+1}月</span>`;}
+    const last=a[a.length-1].v,prev=a[a.length-2].v;const ch=(last-prev)/prev*100;
+    const t=Math.abs(ch)<0.05?'與上次相同':`較上次${ch>0?'上升':'下降'} ${Math.abs(ch).toFixed(1)}%`;
+    return `<span class="trend">${sparkSvg(a)}<span>${t}${full?`（${a.length} 筆紀錄）`:''}</span></span>`;
+  }
+
+  /* Add a 比較 column after 名稱 in the operating and planned tables */
+  const mainTables=['operating','planned'].map(id=>sectionEl(byId(id),'TABLE')).filter(Boolean);
+  mainTables.forEach(t=>{
+    const heads=[...t.querySelectorAll('thead th')];const ni=heads.findIndex(th=>txt(th)==='名稱');
+    if(ni<0)return;
+    const th=document.createElement('th');th.textContent='比較';heads[ni].after(th);
+    t.querySelectorAll('tbody tr').forEach(tr=>{
+      const td=document.createElement('td');td.className='cmp-cell';tr.cells[ni].after(td);
+    });
+  });
+
+  /* Wrap tables and label cells for phone cards */
+  doc.querySelectorAll('table').forEach(t=>{
+    const w=document.createElement('div');w.className='tbl';t.parentNode.insertBefore(w,t);w.appendChild(t);
+    const heads=[...t.querySelectorAll('thead th')].map(txt);
+    if(heads.length>=3) w.classList.add('cards');
+    t.querySelectorAll('tbody tr').forEach(tr=>[...tr.children].forEach((td,i)=>td.setAttribute('data-label',heads[i]||'')));
+  });
+  doc.querySelectorAll('a[href^="http"]').forEach(a=>{a.target='_blank';a.rel='noopener'});
+
+  /* 新增 / 更新 tags, e.g. （新增 2027年1月4日）, shown for TAG_DAYS */
+  const now=new Date();
+  const tagRe=/\s*[（(](新增|更新)\s*(\d{4})年(\d{1,2})月(\d{1,2})日[)）]/;
+  doc.querySelectorAll('td').forEach(td=>{
+    let m;
+    while((m=td.innerHTML.match(tagRe))){
+      const d=new Date(+m[2],+m[3]-1,+m[4]);
+      const fresh=((now-d)/86400000)<=TAG_DAYS&&(now-d)>=-86400000;
+      const kind=m[1]==='新增'?'new':'updated';
+      td.innerHTML=td.innerHTML.replace(tagRe,fresh?` <span class="pill ${kind}">${m[1]}</span>`:'');
+    }
+  });
+
+  /* 坪數: add the square-metre range */
+  const sizeOf=td=>{if(!td)return null;const n=((td.dataset.ping!=null?td.dataset.ping:txt(td)).match(/\d+(?:\.\d+)?/g)||[]).map(parseFloat);return n.length?{lo:Math.min(...n),hi:Math.max(...n)}:null;};
+  const sqm=v=>Math.round(v*PING);
+  const rng=(lo,hi,f)=>lo===hi?fmt(f(lo)):fmt(f(lo))+'–'+fmt(f(hi));
+  doc.querySelectorAll('td[data-label="室內坪數"]').forEach(td=>{
+    td.dataset.ping=txt(td);
+    const n=(txt(td).match(/\d+(?:\.\d+)?/g)||[]).map(parseFloat);if(!n.length)return;
+    const lo=Math.round(Math.min(...n)*PING),hi=Math.round(Math.max(...n)*PING);
+    td.insertAdjacentHTML('beforeend',`<span class="m2">約 ${lo===hi?lo:lo+'–'+hi} 平方公尺</span>`);
+  });
+
+  /* 查核 column: pills and row state */
+  const KIND={'官方':'k-official','媒體':'k-press','僅財訊':'k-only','有出入':'k-conflict'};
+  doc.querySelectorAll('td[data-label="查核"]').forEach(td=>{
+    const s=txt(td),k=KIND[s]||'k-only';
+    td.innerHTML=`<span class="pill ${k}">${s}</span>`;
+    td.parentElement.classList.add(k);td.parentElement.dataset.check=k;
+  });
+
+  /* Region tags and sort keys on every table that starts with 地點 */
+  const REG=[['north',/^(台北|臺北|新北|桃園|新竹|基隆|宜蘭)/],['central',/^(台中|臺中|彰化|南投|苗栗|雲林)/],['south',/^(台南|臺南|高雄|嘉義|屏東|南部)/],['east',/^(台東|臺東|花蓮)/]];
+  const REG_ORDER={north:0,central:1,south:2,east:3,other:4};
+  const placeTables=[...doc.querySelectorAll('table')].filter(t=>txt(t.querySelector('thead th'))==='地點');
+  const unitsOf=tr=>{const td=tr.querySelector('td[data-label="戶數"]');return (txt(td).replace(/,/g,'').match(/\d+/g)||[]).reduce((a,b)=>a+ +b,0);};
+  placeTables.forEach(t=>[...t.querySelectorAll('tbody tr')].forEach((tr,i)=>{
+    const w=txt(tr.cells[0]);const r=REG.find(([,re])=>re.test(w));tr.dataset.region=r?r[0]:'other';
+    tr._order=i;
+    const yc=tr.querySelector('td[data-label="開始營運"],td[data-label="預計營運"]');
+    const y=yc&&txt(yc).match(/\d{4}/);tr._year=y?+y[0]:null;
+    tr._units=tr.querySelector('td[data-label="戶數"]')?unitsOf(tr):null;
+    const nm=txt(tr.querySelector('td[data-label="名稱"]'));
+    const c=CMP[nm];
+    tr._name=nm;tr._cmp=c||null;tr._entry=ENTRY[nm]||null;tr._place=w;
+    tr._size=sizeOf(tr.querySelector('td[data-label="室內坪數"]'));
+    if(c){tr._first=(c.upfront!=null&&c.single!=null)?Math.round((c.upfront+12*c.single)*100)/100:null;
+      tr._firstMin=(c.upfront==null&&c.single!=null)?Math.round(12*c.single*100)/100:null;}
+  }));
+
+  /* Money formatting */
+  let currency=store('tv-cur')==='sgd'&&RATE?'sgd':'twd';
+  const trim=v=>String(Math.round(v*100)/100);
+  function money(wan,kind){
+    if(currency==='sgd'){
+      const s=wan*10000/RATE;const step=kind==='big'?100:10;
+      return 'S$'+fmt(Math.round(s/step)*step);
+    }
+    return (kind==='big'?fmt(Math.round(wan*10)/10):trim(wan))+' 萬';
+  }
+  const MAXPICK=3;
+  let picks=(()=>{try{const a=JSON.parse(store('tv-pick')||'[]');return Array.isArray(a)?a:[];}catch(e){return [];}})();
+  const esc=s=>String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+  function pickBtn(tr){
+    const on=picks.includes(tr._name);const full=!on&&picks.length>=MAXPICK;
+    return `<button type="button" class="pick" data-pick="${esc(tr._name)}" aria-pressed="${on}"${full?' disabled title="最多三項"':''}>${on?'已加入比較':'加入比較'}</button>`;
+  }
+  let incomeWan=null;
+  const shareTxt=v=>incomeWan&&v!=null?`<span class="share">約佔每月收入 ${(v/incomeWan*100).toFixed(v/incomeWan<0.1?1:0)}%</span>`:'';
+  const sizeLine=tr=>`<span class="sub">${tr._size?'坪數 '+rng(tr._size.lo,tr._size.hi,v=>v)+' 坪（約 '+rng(tr._size.lo,tr._size.hi,sqm)+' 平方公尺）':'坪數未公開'}</span>`;
+  function ageLine(tr){const e=tr._entry;return e&&e['年齡']&&e['年齡']!=='未公開'?`<span class="sub">入住年齡：${e['年齡']}</span>`:'<span class="sub">入住年齡未公開</span>';}
+  function renderCmp(){
+    placeTables.forEach(t=>t.querySelectorAll('tbody tr').forEach(tr=>{
+      const td=tr.querySelector('td.cmp-cell');if(!td)return;const c=tr._cmp;
+      if(!c){td.innerHTML=`<div class="cmp"><span class="na">未有比較數據</span>${pickBtn(tr)}</div>`;return;}
+      if(c.single==null&&c.upfront==null){
+        td.innerHTML=`<div class="cmp"><span class="na">${c.singleRaw==='不適用'?'已出售，不適用':'價格未公開'}</span><span class="sub">${c.tenure}</span>${ageLine(tr)}${pickBtn(tr)}</div>`;return;
+      }
+      const lines=[];
+      lines.push(`<span class="big">單人每月 ${c.single!=null?money(c.single)+mealNote(c):'未公開'}</span>`);
+      if(c.single!=null) lines.push(shareTxt(c.single));
+      lines.push(c.couple!=null?`<span class="cp">雙人每月 ${money(c.couple)}</span>`:`<span class="cp unk">雙人價未公開</span>`);
+      lines.push(tr._first!=null?`<span>首年資金 ${money(tr._first,'big')}</span>`:(tr._firstMin!=null?`<span>首年資金至少 ${money(tr._firstMin,'big')}（首期資金未公開）</span>`:'<span class="na">首年資金未公開</span>'));
+      const ex=extraText(c);if(ex) lines.push(`<span class="extra">另需：${ex}</span>`);
+      lines.push(sizeLine(tr));
+      lines.push(`<span class="sub">${c.tenure}</span>`);
+      const hl=histLine(tr);if(hl) lines.push(hl);
+      lines.push(ageLine(tr));
+      lines.push(pickBtn(tr));
+      td.innerHTML=`<div class="cmp">${lines.filter(Boolean).join('')}</div>`;
+    }));
+  }
+  function mealNote(c){return c.meals&&c.meals!=='不含'&&c.meals!=='未公開'?`（${c.meals}）`:'（不含餐）';}
+  function extraText(c){
+    if(!c.extra||c.extra==='無') return '';
+    const em=c.extra.match(/^(.*?)\s*(\d+(?:\.\d+)?)$/);
+    return em?em[1]+' '+money(parseFloat(em[2]),'big'):c.extra;
+  }
+
+  /* Side-by-side comparison */
+  const rowByName={};
+  mainTables.forEach(t=>t.querySelectorAll('tbody tr').forEach(tr=>{rowByName[tr._name]=tr;}));
+  picks=picks.filter(n=>rowByName[n]).slice(0,MAXPICK);
+  const panel=document.createElement('section');panel.id='compare-panel';panel.className='compare-panel';panel.setAttribute('aria-label','並排比較');
+  const bar=document.createElement('div');bar.id='pick-bar';bar.hidden=true;document.body.appendChild(bar);
+  function renderPanel(){
+    const rows=picks.map(n=>rowByName[n]).filter(Boolean);
+    bar.hidden=!rows.length;document.body.classList.toggle('has-picks',!!rows.length);
+    bar.innerHTML=rows.length?`<span>已選 ${rows.length} 項，最多 ${MAXPICK} 項</span><a href="#compare-panel">查看並排比較</a>`:'';
+    if(!rows.length){panel.innerHTML='<h3>並排比較</h3><p class="hint">在表中按「加入比較」，最多可選三項。</p>';return;}
+    const cell=(tr,label)=>{const td=tr.querySelector(`td[data-label="${label}"]`);return td?td.cloneNode(true):null;};
+    const plain=(tr,label)=>{const td=cell(tr,label);if(!td)return '未公開';td.querySelectorAll('.m2').forEach(m=>m.remove());return txt(td)||'未公開';};
+    const E=(tr,k)=>tr._entry&&tr._entry[k]?tr._entry[k]:'未公開';
+    const F=[
+      ['地點',tr=>({h:tr._place})],
+      ['查核',tr=>({h:(cell(tr,'查核')||{innerHTML:''}).innerHTML})],
+      ['單人月費',tr=>{const c=tr._cmp;return c&&c.single!=null?{h:money(c.single)+mealNote(c)+(incomeWan?'<br>'+shareTxt(c.single):''),v:c.single}:{h:'未公開'};}],
+      ['雙人月費',tr=>{const c=tr._cmp;return c&&c.couple!=null?{h:money(c.couple),v:c.couple}:{h:'未公開'};}],
+      ['首年資金',tr=>tr._first!=null?{h:money(tr._first,'big'),v:tr._first}:(tr._firstMin!=null?{h:'至少 '+money(tr._firstMin,'big')+'（首期資金未公開）'}:{h:'未公開'})],
+      ['首期資金',tr=>{const c=tr._cmp;return c&&c.upfront!=null?{h:money(c.upfront,'big'),v:c.upfront}:{h:'未公開'};}],
+      ['另需資金',tr=>({h:tr._cmp&&extraText(tr._cmp)||'無'})],
+      ['租售',tr=>({h:tr._cmp?tr._cmp.tenure:'未公開'})],
+      ['營運年份',tr=>({h:plain(tr,'開始營運')!=='未公開'?plain(tr,'開始營運'):plain(tr,'預計營運')})],
+      ['戶數',tr=>({h:plain(tr,'戶數')})],
+      ['室內坪數',tr=>{const td=cell(tr,'室內坪數');return tr._size?{h:td.innerHTML,v:tr._size.hi,big:true}:{h:td?td.innerHTML:'未公開'};}],
+      ['價格走勢',tr=>({h:histLine(tr,true)||'未有紀錄'})],
+      ['入住年齡',tr=>({h:E(tr,'年齡')})],
+      ['身體狀況',tr=>({h:E(tr,'身體狀況')})],
+      ['其他條件',tr=>({h:E(tr,'其他條件')})],
+      ['外籍人士',tr=>({h:E(tr,'外籍人士')})],
+      ['計算說明',tr=>({h:tr._cmp?(CMPNOTE[tr._name]||''):''})]
+    ];
+    const body=F.map(([label,fn])=>{
+      const vals=rows.map(fn);
+      const withV=vals.filter(v=>v.v!=null);const nums=withV.map(v=>v.v);
+      const best=nums.length>=2?(withV[0].big?Math.max(...nums):Math.min(...nums)):null;
+      return `<tr><th scope="row">${label}</th>${vals.map(v=>`<td${best!=null&&v.v===best?' class="best"':''}>${v.h}</td>`).join('')}</tr>`;
+    }).join('');
+    panel.innerHTML=`<h3>並排比較</h3><p class="hint">綠底為較低的費用或較大的單位（須有兩項或以上公開數字）。<button type="button" class="linkbtn" data-clearpick="1">全部清除</button></p>
+    <div class="tbl cmp-tbl"><table><thead><tr><th></th>${rows.map(tr=>`<th scope="col"><span class="pn">${tr._name}</span><button type="button" class="linkbtn" data-unpick="${esc(tr._name)}">移除</button></th>`).join('')}</tr></thead><tbody>${body}</tbody></table></div>`;
+  }
+  function savePicks(){store('tv-pick',JSON.stringify(picks));}
+  doc.addEventListener('click',e=>{
+    const b=e.target.closest('button');if(!b)return;
+    if(b.dataset.pick!=null){
+      const n=b.dataset.pick;const i=picks.indexOf(n);
+      if(i>=0) picks.splice(i,1); else if(picks.length<MAXPICK) picks.push(n);
+    }else if(b.dataset.unpick!=null){picks=picks.filter(n=>n!==b.dataset.unpick);}
+    else if(b.dataset.clearpick){picks=[];}
+    else return;
+    savePicks();renderCmp();renderPanel();
+  });
+
+  /* Summary computed from the tables */
+  const countRows=h=>{const t=sectionEl(h,'TABLE');const rows=t?[...t.querySelectorAll('tbody tr')]:[];return {n:rows.length,u:rows.reduce((a,r)=>a+unitsOf(r),0)};};
+  const opH=byId('operating'),soonH=byId('planned'),confH=byId('conflicts');
+  const op=countRows(opH),soon=countRows(soonH);
+  const soonT=sectionEl(soonH,'TABLE');
+  const yrs=soonT?[...soonT.querySelectorAll('tbody tr')].map(tr=>tr._year).filter(Boolean):[];
+  const span=yrs.length?(Math.min(...yrs)===Math.max(...yrs)?`${yrs[0]} 年`:`${Math.min(...yrs)} 至 ${Math.max(...yrs)} 年`):'';
+  const confN=confH?(sectionEl(confH,'OL')||{children:[]}).children.length:0;
+  const quote=doc.querySelector('blockquote');
+  const sum=document.createElement('section');sum.className='summary';sum.setAttribute('aria-label','摘要');
+  sum.innerHTML=`<div><b>${op.n}</b><span>家營運中，共 ${fmt(op.u)} 戶</span></div><div><b>${soon.n}</b><span>家籌備中${span?'，預計 '+span+'營運':''}，約 ${fmt(soon.u)} 戶</span></div><div class="c"><b>${confN}</b><span><a href="#conflicts">項出入待釐清</a></span></div>`;
+  (quote||doc.querySelector('h1')).after(sum);
+
+  /* Latest changes, from the 更新紀錄 table */
+  const logH=byId('log');
+  if(logH){
+    const t=sectionEl(logH,'TABLE');const rows=t?[...t.querySelectorAll('tbody tr')]:[];
+    if(rows.length){
+      const lastV=txt(rows[rows.length-1].cells[0]);
+      const latest=rows.filter(r=>txt(r.cells[0])===lastV);
+      const date=txt(latest[latest.length-1].cells[1]);
+      const box=document.createElement('section');box.className='changes';box.setAttribute('aria-label','最新更新');
+      box.innerHTML=`<h3>版本 ${lastV} 更新內容（${date}）</h3><ul>${latest.map(r=>`<li>${r.cells[2].innerHTML}</li>`).join('')}</ul><p style="margin:6px 0 0;font-size:0.85rem"><a href="#log">完整更新紀錄</a></p>`;
+      sum.after(box);
+    }
+  }
+
+  /* Tools */
+  const tools=document.createElement('section');tools.className='tools';tools.setAttribute('aria-label','導覽、排序及篩選');
+  const jumpable=h2s.filter(h=>h.id!=='guide');
+  const SORTS={region:'地區（北至南）',single:'單人月費（低至高）',first:'首年資金（低至高）',year:'開業年份（早至晚）',units:'戶數（多至少）',size:'坪數（大至小）'};
+  tools.innerHTML=`<div class="group"><div class="label">跳至</div><nav class="chips" aria-label="章節">${jumpable.map(h=>`<a href="#${h.id}">${txt(h)}</a>`).join('')}</nav></div>
+  <div class="group"><div class="label">排序</div><div class="chips" role="group" aria-label="排序">${Object.entries(SORTS).map(([k,v])=>`<button type="button" id="s-${k}" data-s="${k}">${v}</button>`).join('')}</div></div>
+  <div class="group"><div class="label">地區</div>
+  <div class="chips" role="group" aria-label="地區篩選">
+    <button type="button" id="r-all" data-r="all">全部</button>
+    <button type="button" id="r-north" data-r="north">北部</button>
+    <button type="button" id="r-central" data-r="central">中部</button>
+    <button type="button" id="r-south" data-r="south">南部</button>
+    <button type="button" id="r-east" data-r="east">東部</button>
+  </div></div>
+  <div class="group"><label class="label" for="budget">每月預算</label>
+  <div class="budget"><input id="budget" type="number" inputmode="decimal" min="0" step="any" placeholder="例如 5"><span id="budget-unit">萬元</span>
+    <span class="chips" role="group" aria-label="人數"><button type="button" id="p-single" data-p="single">單人</button><button type="button" id="p-couple" data-p="couple">雙人</button></span>
+  </div></div>
+  <div class="group"><label class="label" for="minsize">最小坪數</label>
+  <div class="budget"><input id="minsize" type="number" inputmode="decimal" min="0" step="any" placeholder="例如 15">
+    <span class="chips" role="group" aria-label="面積單位"><button type="button" id="u-ping" data-u="ping">坪</button><button type="button" id="u-sqm" data-u="sqm">平方公尺</button></span></div>
+  <p class="hint">保留最大單位達此面積的項目；坪數未公開的項目不顯示。</p></div>
+  <div class="group"><label class="label" for="income">每月收入（用來計算月費佔比）</label>
+  <div class="budget"><input id="income" type="number" inputmode="decimal" min="0" step="any" placeholder="例如 20"><span id="income-unit">萬元</span></div>
+  <p class="hint">只保存在你自己的瀏覽器。</p></div>
+  <div class="group"><div class="label">幣別</div>
+  <div class="chips" role="group" aria-label="幣別"><button type="button" id="cur-twd" data-cur="twd">新台幣</button>${RATE?'<button type="button" id="cur-sgd" data-cur="sgd">新幣</button>':''}</div></div>
+  <div class="group"><div class="label">租或買</div>
+  <div class="chips" role="group" aria-label="租或買篩選"><button type="button" id="t-all" data-t="all">全部</button><button type="button" id="t-rent" data-t="rent">可租</button><button type="button" id="t-buy" data-t="buy">可買</button></div></div>
+  <div class="chips" role="group" aria-label="出入篩選及清除"><button type="button" id="c-only" data-c="1">只看有出入</button><button type="button" id="b-clear" data-clear="1">清除預算、坪數及收入</button></div>
+  <p id="filter-note" aria-live="polite"></p>`;
+  (doc.querySelector('.changes')||sum).after(tools);
+  tools.after(panel);
+  const budgetEl=tools.querySelector('#budget'),sizeEl=tools.querySelector('#minsize'),incomeEl=tools.querySelector('#income');
+  let sizeUnit=store('tv-sizeunit')==='sqm'?'sqm':'ping';
+  [[sizeEl,'tv-minsize'],[incomeEl,'tv-income']].forEach(([el,k])=>{const v=store(k);if(v) el.value=v;});
+  const posNum=el=>{const v=parseFloat(el.value);return isFinite(v)&&v>0?v:null;};
+  const NAMES={north:'北部',central:'中部',south:'南部',east:'東部'};
+  let region=store('tv-region')||'all',conflictOnly=store('tv-conflict')==='1',sortKey=store('tv-sort')||'region',persons=store('tv-persons')==='couple'?'couple':'single',tenure=store('tv-tenure')||'all';
+  if(!['all','rent','buy'].includes(tenure)) tenure='all';
+  if(!SORTS[sortKey]) sortKey='region';
+  const savedBudget=store('tv-budget');if(savedBudget) budgetEl.value=savedBudget;
+
+  function sortTables(){
+    const keyOf={
+      region:tr=>REG_ORDER[tr.dataset.region],
+      single:tr=>tr._cmp&&tr._cmp.single!=null?tr._cmp.single:Infinity,
+      first:tr=>tr._first!=null?tr._first:(tr._firstMin!=null?1e12+tr._firstMin:Infinity),
+      year:tr=>tr._year!=null?tr._year:Infinity,
+      units:tr=>tr._units?-tr._units:Infinity,
+      size:tr=>tr._size?-tr._size.hi:Infinity
+    }[sortKey];
+    placeTables.forEach(t=>{
+      const tb=t.tBodies[0];const rows=[...tb.rows];
+      rows.sort((a,b)=>{const x=keyOf(a),y=keyOf(b);return x===y?a._order-b._order:(x<y?-1:1);});
+      rows.forEach(r=>tb.appendChild(r));
+    });
+  }
+
+  function apply(){
+    if(!NAMES[region]) region='all';
+    tools.querySelectorAll('button[data-r]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.r===region)));
+    tools.querySelectorAll('button[data-s]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.s===sortKey)));
+    tools.querySelectorAll('button[data-p]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.p===persons)));
+    tools.querySelectorAll('button[data-cur]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.cur===currency)));
+    tools.querySelector('#c-only').setAttribute('aria-pressed',String(conflictOnly));
+    tools.querySelector('#budget-unit').textContent=currency==='sgd'?'新幣':'萬元';
+    budgetEl.placeholder=currency==='sgd'?'例如 2000':'例如 5';
+    doc.classList.toggle('mode-couple',persons==='couple');
+    tools.querySelectorAll('button[data-t]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.t===tenure)));
+    tools.querySelectorAll('button[data-u]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.u===sizeUnit)));
+    sizeEl.placeholder=sizeUnit==='sqm'?'例如 50':'例如 15';
+    tools.querySelector('#income-unit').textContent=currency==='sgd'?'新幣':'萬元';
+    incomeEl.placeholder=currency==='sgd'?'例如 8000':'例如 20';
+    const inc=posNum(incomeEl);incomeWan=inc==null?null:(currency==='sgd'?inc*RATE/10000:inc);
+    renderCmp();renderPanel();sortTables();
+    const minRaw=posNum(sizeEl);const minPing=minRaw==null?null:(sizeUnit==='sqm'?minRaw/PING:minRaw);
+
+    const bRaw=parseFloat(budgetEl.value);
+    const budget=isFinite(bRaw)&&bRaw>0?bRaw:null;
+    const budgetWan=budget==null?null:(currency==='sgd'?budget*RATE/10000:budget);
+    placeTables.forEach(t=>{
+      const isMain=mainTables.includes(t);let shown=0;
+      t.querySelectorAll('tbody tr').forEach(tr=>{
+        let ok=(region==='all'||tr.dataset.region===region)&&(!conflictOnly||!isMain||tr.dataset.check==='k-conflict');
+        if(ok&&isMain&&tenure!=='all'){
+          const tv=tr._cmp&&tr._cmp.tenure;
+          ok=tenure==='rent'?(tv==='出租'||tv==='租售皆有'):(tv==='出售'||tv==='租售皆有');
+        }
+        if(ok&&isMain&&minPing!=null) ok=!!tr._size&&tr._size.hi>=minPing-1e-9;
+        if(ok&&isMain&&budgetWan!=null){
+          const c=tr._cmp;
+          if(!c||c.single==null) ok=false;
+          else if(persons==='couple') ok=c.couple!=null?c.couple<=budgetWan+1e-9:c.single<=budgetWan+1e-9;
+          else ok=c.single<=budgetWan+1e-9;
+        }
+        tr.hidden=!ok;if(ok)shown++;
+      });
+      const w=t.closest('.tbl');const n=w.nextElementSibling;
+      if(n&&n.classList.contains('empty-note')) n.remove();
+      if(!shown){const p=document.createElement('p');p.className='empty-note';p.textContent='本表沒有符合篩選條件的項目。';w.after(p);}
+    });
+
+    const conds=[];
+    if(region!=='all') conds.push('位於'+NAMES[region]);
+    if(budgetWan!=null) conds.push(`${persons==='couple'?'雙人':'單人'}每月不超過 ${currency==='sgd'?'S$'+fmt(budget)+' ':trim(budget)+' 萬'}`);
+    if(minPing!=null) conds.push(`最大單位至少 ${sizeUnit==='sqm'?trim(minRaw)+' 平方公尺':trim(minRaw)+' 坪'}`);
+    if(tenure!=='all') conds.push(tenure==='rent'?'可以租住':'可以購買');
+    if(conflictOnly) conds.push('有出入');
+    let note=conds.length?`只顯示${conds.join('、')}的項目。`:'顯示全部項目。';
+    if(budgetWan!=null) note+=persons==='couple'?'雙人價未公開的項目以單人價判斷；沒有月費數字的項目不顯示。':'沒有月費數字的項目不顯示。';
+    if(minPing!=null) note+=`即約 ${sizeUnit==='sqm'?trim(Math.round(minPing*10)/10)+' 坪':fmt(sqm(minPing))+' 平方公尺'}；坪數未公開的項目不顯示。`;
+    if(tenure!=='all') note+='租售方式待確認的項目不顯示。';
+    if(budgetWan!=null||minPing!=null||tenure!=='all'||conflictOnly) note+='「尚未列入」只按地區篩選。';
+    note+=`排序：${SORTS[sortKey]}。`;
+    if(sortKey==='first') note+='只有首年資金下限的項目排在有完整數字的項目之後。';
+    if(currency==='sgd') note+=`匯率：1 新幣 = ${RATE} 新台幣（${rm[2]}）。`;
+    document.getElementById('filter-note').textContent=note;
+    store('tv-region',region);store('tv-conflict',conflictOnly?'1':'0');store('tv-sort',sortKey);store('tv-persons',persons);store('tv-cur',currency);store('tv-budget',budgetEl.value||'');store('tv-tenure',tenure);store('tv-sizeunit',sizeUnit);store('tv-minsize',sizeEl.value||'');store('tv-income',incomeEl.value||'');
+  }
+  tools.addEventListener('click',e=>{
+    const b=e.target.closest('button');if(!b)return;
+    if(b.dataset.r) region=b.dataset.r;
+    else if(b.dataset.s) sortKey=b.dataset.s;
+    else if(b.dataset.t) tenure=b.dataset.t;
+    else if(b.dataset.p) persons=b.dataset.p;
+    else if(b.dataset.cur){
+      if(b.dataset.cur!==currency) [budgetEl,incomeEl].forEach(el=>{
+        const v=parseFloat(el.value);
+        if(el.value&&isFinite(v)) el.value=b.dataset.cur==='sgd'?String(Math.round(v*10000/RATE/10)*10):trim(Math.round(v*RATE/1000)/10);
+      });
+      currency=b.dataset.cur;
+    }
+    else if(b.dataset.u){
+      if(b.dataset.u!==sizeUnit&&sizeEl.value){const v=parseFloat(sizeEl.value);if(isFinite(v)) sizeEl.value=b.dataset.u==='sqm'?String(Math.round(v*PING)):trim(Math.round(v/PING*10)/10);}
+      sizeUnit=b.dataset.u;
+    }
+    else if(b.dataset.clear){budgetEl.value='';sizeEl.value='';incomeEl.value='';}
+    else if(b.dataset.c) conflictOnly=!conflictOnly;
+    apply();
+  });
+  /* ---------- Overview: supply timeline and map ---------- */
+  const ovH=byId('overview');
+  const checkM=md.match(/最後查核 (\d{4})年(\d{1,2})月/);
+  const TODAY=checkM?(+checkM[1]+(+checkM[2]-1)/12):(now.getFullYear()+now.getMonth()/12);
+  const CHECK_YEAR=checkM?+checkM[1]:now.getFullYear();
+  const events=[];const assumed=[];const skipped=[];
+  mainTables.forEach((t,ti)=>t.querySelectorAll('tbody tr').forEach(tr=>{
+    let y=tr._year;
+    if(y==null){const s=txt(tr.querySelector('td[data-label="開始營運"],td[data-label="預計營運"]'));if(/交屋/.test(s)){y=CHECK_YEAR;assumed.push(tr._name);}}
+    if(y==null||!tr._units){skipped.push(`${tr._name}（${y==null?'未有營運年份':'未有戶數'}）`);return;}
+    events.push({y,u:tr._units,name:tr._name,plan:ti===1});
+  }));
+  const tip=document.createElement('div');tip.className='tip';tip.hidden=true;
+  function showTip(html,host,ev){
+    host.appendChild(tip);tip.innerHTML=html;tip.hidden=false;
+    const r=host.getBoundingClientRect();let x=ev.clientX-r.left+12,y=ev.clientY-r.top+12;
+    const tw=tip.offsetWidth||180;if(x+tw>r.width)x=Math.max(4,ev.clientX-r.left-tw-12);
+    tip.style.left=x+'px';tip.style.top=y+'px';
+  }
+  const hideTip=()=>{tip.hidden=true;};
+
+  if(ovH){
+    const ov=document.createElement('div');ov.className='overview';
+    ov.innerHTML=`<figure class="fig" id="fig-timeline"><figcaption class="fig-title">累計戶數，1995 至 2030 年</figcaption><div class="plot" id="tl-plot"></div><p class="fig-note" id="tl-note"></p></figure>
+    <div class="map-row"><figure class="fig" id="fig-map"><figcaption class="fig-title">各城市戶數</figcaption><div class="plot" id="map-plot"></div><p class="fig-note">圓圈面積代表戶數。實心為營運中，虛線為連同籌備中的總數。點選圓圈即篩選該地區。</p></figure><div class="city-list" id="city-list"></div></div>`;
+    let n=ovH.nextElementSibling;while(n&&n.tagName==='P')n=n.nextElementSibling;
+    ovH.parentNode.insertBefore(ov,n);
+
+    /* Timeline */
+    const tlPlot=ov.querySelector('#tl-plot');
+    const yearsAll=[...new Set(events.map(e=>Math.max(e.y,e.plan?Math.ceil(TODAY):e.y)))].sort((a,b)=>a-b);
+    function drawTimeline(){
+      const W=Math.max(300,Math.min(760,tlPlot.clientWidth||640)),H=250,m={l:46,r:14,t:18,b:28},x0=1995,x1=2030;
+      const evs=events.map(e=>({...e,y:e.plan?Math.max(e.y,Math.ceil(TODAY)):e.y})).sort((a,b)=>a.y-b.y);
+      const total=evs.reduce((a,e)=>a+e.u,0),opTotal=evs.filter(e=>!e.plan).reduce((a,e)=>a+e.u,0);
+      const max=Math.max(1000,Math.ceil(total/1000)*1000);
+      const X=y=>m.l+(y-x0)/(x1-x0)*(W-m.l-m.r),Y=v=>H-m.b-v/max*(H-m.t-m.b);
+      const byYear={};evs.forEach(e=>{const k=e.y+(e.plan?'p':'o');(byYear[k]=byYear[k]||{y:e.y,plan:e.plan,list:[]}).list.push(e);});
+      let cum=0;const steps=Object.values(byYear).sort((a,b)=>a.y-b.y||(a.plan-b.plan)).map(g=>{const add=g.list.reduce((a,e)=>a+e.u,0);cum+=add;return {...g,add,cum};});
+      const opSteps=steps.filter(s=>!s.plan),plSteps=steps.filter(s=>s.plan);
+      let d=`M${X(x0)},${Y(0)}`,c=0;opSteps.forEach(s=>{d+=` H${X(s.y)} V${Y(s.cum)}`;c=s.cum;});d+=` H${X(TODAY)}`;
+      const area=d+` V${Y(0)} Z`;
+      let dp=`M${X(TODAY)},${Y(c)}`;plSteps.forEach(s=>{dp+=` H${X(s.y)} V${Y(s.cum)}`;});dp+=` H${X(x1)}`;
+      let g='';
+      for(let v=0;v<=max;v+=1000){g+=`<line x1="${m.l}" x2="${W-m.r}" y1="${Y(v)}" y2="${Y(v)}" class="grid"/><text x="${m.l-6}" y="${Y(v)+4}" class="ax" text-anchor="end">${fmt(v)}</text>`;}
+      for(let y=x0;y<=x1;y+=5){g+=`<text x="${X(y)}" y="${H-8}" class="ax" text-anchor="middle">${y}</text>`;}
+      const last=steps[steps.length-1];
+      g+=`<path d="${area}" class="area"/><path d="${d}" class="ln"/>${plSteps.length?`<path d="${dp}" class="ln plan"/>`:''}`;
+      g+=`<line x1="${X(TODAY)}" x2="${X(TODAY)}" y1="${m.t+16}" y2="${H-m.b}" class="today"/><text x="${X(TODAY)-5}" y="${H-m.b-6}" class="ax" text-anchor="end">今天</text>`;
+      g+=`<circle cx="${X(TODAY)}" cy="${Y(opTotal)}" r="4" class="dot"/><text x="${X(TODAY)-8}" y="${Y(opTotal)-9}" class="lab" text-anchor="end">現有 ${fmt(opTotal)} 戶</text>`;
+      if(plSteps.length){g+=`<circle cx="${X(last.y)}" cy="${Y(last.cum)}" r="4" class="dot hollow"/><text x="${W-m.r}" y="${Math.max(12,Y(last.cum)-9)}" class="lab" text-anchor="end">${last.y} 年約 ${fmt(last.cum)} 戶</text>`;}
+      g+=`<line class="cross" id="tl-cross" x1="0" x2="0" y1="${m.t}" y2="${H-m.b}" visibility="hidden"/><rect class="hit" x="${m.l}" y="${m.t}" width="${W-m.l-m.r}" height="${H-m.t-m.b}"/>`;
+      tlPlot.innerHTML=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="累計戶數由 ${steps[0]?steps[0].y:''} 年的 ${steps[0]?fmt(steps[0].cum):0} 戶，增至目前 ${fmt(opTotal)} 戶，預計 ${last?last.y:''} 年約 ${last?fmt(last.cum):''} 戶">${g}</svg>`;
+      const svg=tlPlot.querySelector('svg'),cross=svg.querySelector('#tl-cross');
+      const move=ev=>{
+        const r=svg.getBoundingClientRect();const px=(ev.clientX-r.left)*(W/r.width);
+        let best=null,bd=1e9;steps.forEach(s=>{const dd=Math.abs(X(s.y)-px);if(dd<bd){bd=dd;best=s;}});
+        if(!best)return;const same=steps.filter(s=>s.y===best.y);
+        cross.setAttribute('x1',X(best.y));cross.setAttribute('x2',X(best.y));cross.setAttribute('visibility','visible');
+        showTip(`<b>${best.y} 年${same.every(s=>s.plan)?'（預計）':''}</b><br>${same.map(s=>`${s.plan?'預計':''}新增 ${fmt(s.add)} 戶：${s.list.map(e=>e.name).join('、')}`).join('<br>')}<br>累計 ${fmt(same[same.length-1].cum)} 戶`,tlPlot,ev);
+      };
+      svg.addEventListener('pointermove',move);svg.addEventListener('pointerdown',move);
+      svg.addEventListener('pointerleave',()=>{cross.setAttribute('visibility','hidden');hideTip();});
+    }
+    drawTimeline();
+    const note=[];
+    if(assumed.length) note.push(`${[...new Set(assumed.map(n=>n.replace(/\s*[一二三四五]期$/,'')))].join('、')}仍在交屋，以 ${CHECK_YEAR} 年計入。`);
+    if(skipped.length) note.push(`未列入時間軸：${skipped.join('、')}。`);
+    note.push('預計營運年份以財訊為準，部分與其他報導有出入。');
+    ov.querySelector('#tl-note').textContent=note.join('');
+    let rzT;if(window.ResizeObserver){let lastW=tlPlot.clientWidth;new ResizeObserver(()=>{if(Math.abs(tlPlot.clientWidth-lastW)<8)return;lastW=tlPlot.clientWidth;clearTimeout(rzT);rzT=setTimeout(drawTimeline,120);}).observe(tlPlot);}
+
+    /* Map */
+    const CITY={'台北':[25.06,121.56,14,-6,'start'],'新北':[25.12,121.46,-16,-8,'end'],'基隆':[25.13,121.74,12,-4,'start'],'桃園':[24.99,121.30,-16,14,'end'],'新竹市':[24.80,120.97,-12,4,'end'],'新竹':[24.74,121.16,14,8,'start'],'苗栗':[24.56,120.82,-12,4,'end'],'台中':[24.15,120.66,-14,4,'end'],'彰化':[24.08,120.54,-12,4,'end'],'南投':[23.90,120.69,12,4,'start'],'雲林':[23.71,120.43,-12,4,'end'],'嘉義':[23.48,120.45,-12,4,'end'],'台南':[23.00,120.23,-14,4,'end'],'高雄':[22.63,120.30,-12,4,'end'],'屏東':[22.67,120.49,12,4,'start'],'宜蘭':[24.70,121.74,12,4,'start'],'花蓮':[23.98,121.60,12,4,'start'],'台東':[22.78,121.10,12,4,'start']};
+    const DISPLAY={'新竹':'新竹縣','嘉義':'嘉義縣'};const dn=c=>DISPLAY[c]||c;
+    const CITY_KEYS=Object.keys(CITY).sort((a,b)=>b.length-a.length);
+    const OUTLINE=[[121.51,25.30],[121.62,25.22],[121.74,25.15],[121.85,25.11],[122.00,25.01],[121.90,24.90],[121.83,24.70],[121.86,24.55],[121.73,24.35],[121.62,24.08],[121.60,23.95],[121.52,23.70],[121.45,23.40],[121.35,23.10],[121.18,22.80],[121.00,22.60],[120.90,22.35],[120.86,22.10],[120.84,21.90],[120.72,21.93],[120.70,22.10],[120.62,22.30],[120.45,22.48],[120.30,22.60],[120.25,22.75],[120.15,22.98],[120.10,23.20],[120.12,23.45],[120.20,23.70],[120.30,23.95],[120.42,24.15],[120.55,24.35],[120.70,24.60],[120.88,24.80],[121.00,24.95],[121.15,25.05],[121.30,25.12],[121.42,25.18]];
+    const agg={};const unplaced=[];
+    mainTables.forEach((t,ti)=>t.querySelectorAll('tbody tr').forEach(tr=>{
+      const k=CITY_KEYS.find(c=>tr._place.replace(/^臺/,'台').startsWith(c));
+      if(!k){unplaced.push(tr._name);return;}
+      const a=agg[k]=agg[k]||{op:{n:0,u:0,names:[]},pl:{n:0,u:0,names:[]},region:tr.dataset.region};
+      const b=ti===0?a.op:a.pl;b.n++;b.u+=tr._units||0;b.names.push(tr._name);
+    }));
+    const padL=58,padR=58,mapW=244,kx=mapW/2.15,ky=kx/0.916,MW=padL+mapW+padR,MH=Math.round(3.5*ky)+20;
+    const PX=lon=>padL+(lon-119.95)*kx,PY=lat=>10+(25.35-lat)*ky;
+    const maxU=Math.max(1,...Object.values(agg).map(a=>a.op.u+a.pl.u));
+    const R=u=>u>0?Math.max(4,Math.sqrt(u/maxU)*17):0;
+    const cities=Object.keys(agg).sort((a,b)=>(agg[b].op.u+agg[b].pl.u)-(agg[a].op.u+agg[a].pl.u));
+    let mg=`<path d="M${OUTLINE.map(([lo,la])=>PX(lo).toFixed(1)+','+PY(la).toFixed(1)).join(' L')} Z" class="land"/>`;
+    cities.forEach(cn=>{
+      const a=agg[cn],[la,lo]=CITY[cn],cx=PX(lo),cy=PY(la),rt=R(a.op.u+a.pl.u),ro=R(a.op.u);
+      mg+=`<g class="city" data-city="${cn}" tabindex="0" role="button" aria-label="${dn(cn)}：營運中 ${a.op.n} 項 ${fmt(a.op.u)} 戶，籌備中 ${a.pl.n} 項 ${fmt(a.pl.u)} 戶">`;
+      if(a.pl.u>0) mg+=`<circle cx="${cx}" cy="${cy}" r="${rt}" class="b-total"/>`;
+      if(ro>0) mg+=`<circle cx="${cx}" cy="${cy}" r="${ro}" class="b-op"/>`;
+      mg+=`<circle cx="${cx}" cy="${cy}" r="${Math.max(rt,12)}" class="b-hit"/></g>`;
+    });
+    cities.forEach(cn=>{const a=agg[cn],[la,lo,dx,dy,anc]=CITY[cn];const off=Math.max(R(a.op.u+a.pl.u),R(a.op.u))*(dx<0?-1:1);
+      mg+=`<text x="${PX(lo)+dx+off}" y="${PY(la)+dy}" text-anchor="${anc}" class="mlab" data-city="${cn}">${dn(cn)} ${a.op.n+a.pl.n}</text>`;});
+    const mapPlot=ov.querySelector('#map-plot');
+    mapPlot.innerHTML=`<svg viewBox="0 0 ${MW} ${MH}" role="img" aria-label="台灣各城市營運中及籌備中退休宅戶數簡圖">${mg}</svg>`;
+    const goRegion=cn=>{region=agg[cn].region;apply();const t=byId('operating');if(t&&t.scrollIntoView)t.scrollIntoView();};
+    mapPlot.querySelectorAll('[data-city]').forEach(el=>{
+      const cn=el.dataset.city,a=agg[cn];
+      const html=`<b>${dn(cn)}</b><br>營運中 ${a.op.n} 項，${fmt(a.op.u)} 戶${a.op.names.length?'：'+a.op.names.join('、'):''}<br>籌備中 ${a.pl.n} 項，${fmt(a.pl.u)} 戶${a.pl.names.length?'：'+a.pl.names.join('、'):''}`;
+      el.addEventListener('pointermove',ev=>showTip(html,mapPlot,ev));
+      el.addEventListener('pointerleave',hideTip);
+      el.addEventListener('click',()=>goRegion(cn));
+      el.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();goRegion(cn);}});
+    });
+    /* City list beside the map */
+    const RN={north:'北部',central:'中部',south:'南部',east:'東部',other:'其他'};
+    const list=ov.querySelector('#city-list');
+    list.innerHTML=['north','central','south','east','other'].map(r=>{
+      const cs=cities.filter(c=>agg[c].region===r);if(!cs.length)return '';
+      return `<div class="reg"><button type="button" class="reg-btn" data-r="${r}">${RN[r]}</button><ul>${cs.map(c=>{const a=agg[c];const parts=[];if(a.op.n)parts.push(`營運中 ${a.op.n} 項 ${fmt(a.op.u)} 戶`);if(a.pl.n)parts.push(`籌備中 ${a.pl.n} 項 ${fmt(a.pl.u)} 戶`);return `<li><b>${dn(c)}</b>　${parts.join('；')}</li>`;}).join('')}</ul></div>`;
+    }).join('')+(unplaced.length?`<p class="fig-note">未能標示：${unplaced.join('、')}</p>`:'');
+    list.addEventListener('click',e=>{const b=e.target.closest('button[data-r]');if(!b)return;region=b.dataset.r;apply();const t=byId('operating');if(t&&t.scrollIntoView)t.scrollIntoView();});
+  }
+
+  /* Price history table: fold into a details element, with a status note */
+  if(histT){
+    const w=histT.closest('.tbl');const det=document.createElement('details');det.className='hist';
+    const n=histT.tBodies[0].rows.length;
+    det.innerHTML=`<summary>展開全部 ${n} 筆紀錄</summary>`;w.parentNode.insertBefore(det,w);det.appendChild(w);
+    const maxN=Math.max(0,...Object.values(HIST).map(a=>a.length));
+    if(maxN<2){
+      const nx=md.match(/下次查核：(\d{4}年\d{1,2}月\d{1,2}日)/);
+      const p=document.createElement('p');p.className='fig-note';p.textContent=`目前每個項目只有一筆紀錄。${nx?nx[1]+'查核後':'下次查核後'}開始顯示走勢。`;
+      det.before(p);
+    }
+  }
+
+  [budgetEl,sizeEl,incomeEl].forEach(el=>el.addEventListener('input',apply));
+  apply();
+  if(location.hash){const el=document.getElementById(location.hash.slice(1));if(el)el.scrollIntoView();}
+})();
+</script>
+
+</body></html>
